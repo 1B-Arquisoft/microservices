@@ -52,12 +52,16 @@ services:
     container_name: user_info_ms
     depends_on:
       - user_information_db
+      - rabbitmq
     environment:
       - MYSQL_DB=USER_INFORMATION
       - MYSQL_USER=grupo1b
       - MYSQL_PASSWORD=cristianoronaldo
       - MYSQL_HOST=user_information_db
       - MYSQL_PORT=3306
+
+      - MQHOST=rabbitmq
+      - MQPORT=5672
     expose:
       - 3000
     ports:
@@ -78,6 +82,12 @@ services:
       - 3305:3306
     volumes:
       - user_information_db:/var/lib/mysql
+    rabbitmq:
+      container_name: rabbitmq
+      image: rabbitmq:3.10-management
+      ports:
+        - 5672:5672
+
 version: "3.8"
 volumes:
   courses_db:
