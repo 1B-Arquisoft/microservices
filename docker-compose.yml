@@ -92,6 +92,21 @@ services:
       - courses_ms
       - academic_history_ms
       - rabbitmq
+    environment:
+      - COURSES_ROUTE=courses_ms
+      - COURSES_PORT=8080
+      - USERS_ROUTE=user_info_ms
+      - USERS_PORT=3000
+      - SCHEDULES_ROUTE=schedule_ms
+      - SCHEDULES_PORT=8004
+      - CALIFICATIONS_ROUTE=califications_ms
+      - CALIFICATIONS_PORT=8002
+      - ACADEMICHISTORY_ROUTE=academic_history_ms
+      - ACADEMICHISTORY_PORT=8001
+      - ENROLLS_ROUTE=enrolls_ms
+      - ENROLLS_PORT=8003
+      - MQHOST=rabbitmq
+      - MQPORT=5672
     expose:
       - 4000
     ports:
