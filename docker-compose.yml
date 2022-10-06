@@ -98,13 +98,13 @@ services:
       - USERS_ROUTE=user_info_ms
       - USERS_PORT=3000
       - SCHEDULES_ROUTE=schedule_ms
-      - SCHEDULES_PORT=8004
+      - SCHEDULES_PORT=8000
       - CALIFICATIONS_ROUTE=califications_ms
-      - CALIFICATIONS_PORT=8002
+      - CALIFICATIONS_PORT=8000
       - ACADEMICHISTORY_ROUTE=academic_history_ms
-      - ACADEMICHISTORY_PORT=8001
+      - ACADEMICHISTORY_PORT=8000
       - ENROLLS_ROUTE=enrolls_ms
-      - ENROLLS_PORT=8003
+      - ENROLLS_PORT=8080
       - MQHOST=rabbitmq
       - MQPORT=5672
     expose:
