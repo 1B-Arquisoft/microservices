@@ -6,9 +6,9 @@ services:
       - 8000
     ports:
       - 8001:8000
-  califications_ms:
+  calificationsms:
     build: ../califications
-    container_name: califications_ms
+    container_name: calificationsms
     expose:
       - 8000
     ports:
@@ -27,8 +27,8 @@ services:
     volumes:
       - courses_db:/var/lib/mysql
 
-  courses_ms:
-    container_name: courses_ms
+  coursesms:
+    container_name: coursesms
     build: ../courses/courses_ms
     depends_on:
       - courses_db
@@ -37,9 +37,9 @@ services:
     ports:
       - 8080:8080
 
-  enrolls_ms:
+  enrollsms:
     build: ../EnrollsAPI
-    container_name: enrolls_ms
+    container_name: enrollsms
     expose:
       - 8080
     ports:
@@ -53,9 +53,9 @@ services:
     ports:
       - 8004:8000
         
-  user_info_ms:
+  user_infoms:
     build: ../userInfo
-    container_name: user_info_ms
+    container_name: user_infoms
     depends_on:
       - user_information_db
       - rabbitmq
@@ -93,23 +93,23 @@ services:
     depends_on:
       - user_information_db
       - schedulems
-      - califications_ms
-      - enrolls_ms
-      - courses_ms
+      - calificationsms
+      - enrollsms
+      - coursesms
       - academichistoryms
       - rabbitmq
     environment:
-      - COURSES_ROUTE=courses_ms
+      - COURSES_ROUTE=coursesms
       - COURSES_PORT=8080
-      - USERS_ROUTE=user_info_ms
+      - USERS_ROUTE=user_infoms
       - USERS_PORT=3000
       - SCHEDULES_ROUTE=schedulems
       - SCHEDULES_PORT=8000
-      - CALIFICATIONS_ROUTE=califications_ms
+      - CALIFICATIONS_ROUTE=calificationsms
       - CALIFICATIONS_PORT=8000
       - ACADEMICHISTORY_ROUTE=academichistoryms
       - ACADEMICHISTORY_PORT=8000
-      - ENROLLS_ROUTE=enrolls_ms
+      - ENROLLS_ROUTE=enrollsms
       - ENROLLS_PORT=8080
       - MQHOST=rabbitmq
       - MQPORT=5672
