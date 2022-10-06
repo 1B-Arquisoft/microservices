@@ -1,16 +1,16 @@
 services:
-  academic_history_ms:
+  academichistoryms:
     build: ../AcademicHistory
-    container_name: academic_history_ms
+    container_name: academichistoryms
     expose:
-      - 8001
+      - 8000
     ports:
       - 8001:8000
   califications_ms:
     build: ../califications
     container_name: califications_ms
     expose:
-      - 8002
+      - 8000
     ports:
       - 8002:8000
 
@@ -32,18 +32,24 @@ services:
     build: ../courses/courses_ms
     depends_on:
       - courses_db
+    expose:
+      - 8000
     ports:
       - 8080:8080
 
   enrolls_ms:
     build: ../EnrollsAPI
     container_name: enrolls_ms
+    expose:
+      - 8080
     ports:
       - 8003:8080
 
-  schedule_ms:
+  schedulems:
     build: ../schedule
-    container_name: schedule_ms
+    container_name: schedulems
+    expose:
+      - 8000
     ports:
       - 8004:8000
         
@@ -86,22 +92,22 @@ services:
     container_name: api_gateway
     depends_on:
       - user_information_db
-      - schedule_ms
+      - schedulems
       - califications_ms
       - enrolls_ms
       - courses_ms
-      - academic_history_ms
+      - academichistoryms
       - rabbitmq
     environment:
       - COURSES_ROUTE=courses_ms
       - COURSES_PORT=8080
       - USERS_ROUTE=user_info_ms
       - USERS_PORT=3000
-      - SCHEDULES_ROUTE=schedule_ms
+      - SCHEDULES_ROUTE=schedulems
       - SCHEDULES_PORT=8000
       - CALIFICATIONS_ROUTE=califications_ms
       - CALIFICATIONS_PORT=8000
-      - ACADEMICHISTORY_ROUTE=academic_history_ms
+      - ACADEMICHISTORY_ROUTE=academichistoryms
       - ACADEMICHISTORY_PORT=8000
       - ENROLLS_ROUTE=enrolls_ms
       - ENROLLS_PORT=8080
