@@ -82,7 +82,7 @@ services:
     volumes:
       - user_information_db:/var/lib/mysql
   api_gateway:
-    build: .../ApiGateway
+    build: ../ApiGateway
     container_name: api_gateway
     depends_on:
       - user_information_db
