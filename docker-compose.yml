@@ -81,6 +81,21 @@ services:
       - 3305:3306
     volumes:
       - user_information_db:/var/lib/mysql
+  api_gateway:
+    build: ../ApiGateway
+    container_name: api_gateway
+    depends_on:
+      - user_information_db
+      - schedule_ms
+      - califications_ms
+      - enrolls_ms
+      - courses_ms
+      - academic_history_ms
+      - rabbitmq
+    expose:
+      - 4000
+    ports:
+      - 4000:4000
   rabbitmq:
     container_name: rabbitmq
     image: rabbitmq:3.10-management
