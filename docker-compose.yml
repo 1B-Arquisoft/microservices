@@ -117,6 +117,13 @@ services:
       - 4000
     ports:
       - 4000:4000
+  frontweb:
+     build: ../frontweb
+     container_name: front_web
+     expose: 
+       - 3000
+     ports:
+       - 3001:3000
   rabbitmq:
     container_name: rabbitmq
     image: rabbitmq:3.10-management
