@@ -6,87 +6,6 @@ services:
       - 8000
     ports:
       - 8001:8000
-  calificationsms:
-    build: ../califications
-    container_name: calificationsms
-    expose:
-      - 8000
-    ports:
-      - 8002:8000
-
-  courses_db:
-    build: ../courses/courses_ms/courses_db
-    container_name: courses_db
-    environment:
-      - MYSQL_DATABASE=courses_db
-      - MYSQL_PASSWORD=2022
-      - MYSQL_ROOT_PASSWORD=2022
-      - MYSQL_USER=courses
-    ports:
-      - 3306:3306
-    volumes:
-      - courses_db:/var/lib/mysql
-
-  coursesms:
-    container_name: coursesms
-    build: ../courses/courses_ms
-    depends_on:
-      - courses_db
-    expose:
-      - 8000
-    ports:
-      - 8080:8080
-
-  enrollsms:
-    build: ../EnrollsAPI
-    container_name: enrollsms
-    expose:
-      - 8080
-    ports:
-      - 8003:8080
-
-  schedulems:
-    build: ../schedule
-    container_name: schedulems
-    expose:
-      - 8000
-    ports:
-      - 8004:8000
-        
-  user_infoms:
-    build: ../userInfo
-    container_name: user_infoms
-    depends_on:
-      - user_information_db
-      - rabbitmq
-    environment:
-      - MYSQL_DB=USER_INFORMATION
-      - MYSQL_USER=grupo1b
-      - MYSQL_PASSWORD=cristianoronaldo
-      - MYSQL_HOST=user_information_db
-      - MYSQL_PORT=3306
-      - MQHOST=rabbitmq
-      - MQPORT=5672
-    expose:
-      - 3000
-    ports:
-      - 3000:3000
-
-  user_information_db:
-    build: ../userInfo/user_information_db
-    command: --default-authentication-plugin=mysql_native_password
-    container_name: user_information_db
-    environment:
-      - MYSQL_ROOT_PASSWORD=contrasenasegura
-      - MYSQL_DATABASE=USER_INFORMATION
-      - MYSQL_USER=grupo1b
-      - MYSQL_PASSWORD=cristianoronaldo
-    expose:
-      - 3306
-    ports:
-      - 3305:3306
-    volumes:
-      - user_information_db:/var/lib/mysql
   api_gateway:
     build: ../ApiGateway
     container_name: api_gateway
@@ -115,72 +34,145 @@ services:
       - MQPORT=5672
     expose:
       - 4000
+  calificationsms:
+    build: ../califications
+    container_name: calificationsms
+    expose:
+      - 8000
     ports:
-      - 4000:4000
+      - 8002:8000
+  courses_db:
+    build: ../courses/courses_ms/courses_db
+    container_name: courses_db
+    environment:
+      - MYSQL_DATABASE=courses_db
+      - MYSQL_PASSWORD=2022
+      - MYSQL_ROOT_PASSWORD=2022
+      - MYSQL_USER=courses
+    ports:
+      - 3306:3306
+    volumes:
+      - courses_db:/var/lib/mysql
+  coursesms:
+    build: ../courses/courses_ms
+    container_name: coursesms
+    depends_on:
+      - courses_db
+    expose:
+      - 8000
+    ports:
+      - 8080:8080
+  enrollsms:
+    build: ../EnrollsAPI
+    container_name: enrollsms
+    expose:
+      - 8080
+    ports:
+      - 8003:8080
   frontweb:
-     build: ../frontweb
-     container_name: front_web
-     expose: 
-       - 3000
-     ports:
-       - 3001:3000
+    build: ../frontweb
+    container_name: front_web
+    depends_on:
+      - reverseproxy
+    expose:
+      - 3000
+    ports:
+      - 3001:3000
+  phpldapadmin:
+    container_name: ldap_client
+    environment:
+      PHPLDAPADMIN_HTTPS: false
+      PHPLDAPADMIN_LDAP_HOSTS: siuu-ldap
+    image: osixia/phpldapadmin:latest
+    links:
+      - siuu-ldap
+    ports:
+      - 8085:80
   rabbitmq:
     container_name: rabbitmq
     image: rabbitmq:3.10-management
     ports:
       - 5672:5672
+  reverseproxy:
+    build: ../reverseProxy
+    container_name: reverseproxy
+    ports:
+      - 80:80
+  schedulems:
+    build: ../schedule
+    container_name: schedulems
+    expose:
+      - 8000
+    ports:
+      - 8004:8000
   siuu-ldap:
-    image: osixia/openldap:1.1.8
     container_name: siuu_ldap
     environment:
       COMPOSE_HTTP_TIMEOUT: 200
-      LDAP_LOG_LEVEL: "256"
-      LDAP_ORGANISATION: "SIUU"
-      LDAP_DOMAIN: "siuu.edu.co"
+      LDAP_ADMIN_PASSWORD: admin
+      LDAP_BACKEND: hdb
       LDAP_BASE_DN: ""
-      LDAP_ADMIN_PASSWORD: "admin"
-      LDAP_CONFIG_PASSWORD: "config"
-      LDAP_READONLY_USER: "false"
-      #LDAP_READONLY_USER_USERNAME: "readonly"
-      #LDAP_READONLY_USER_PASSWORD: "readonly"
-      LDAP_BACKEND: "hdb"
-      LDAP_TLS: "true"
-      LDAP_TLS_CRT_FILENAME: "ldap.crt"
-      LDAP_TLS_KEY_FILENAME: "ldap.key"
-      LDAP_TLS_CA_CRT_FILENAME: "ca.crt"
-      LDAP_TLS_ENFORCE: "false"
-      LDAP_TLS_CIPHER_SUITE: "SECURE256:-VERS-SSL3.0"
-      LDAP_TLS_PROTOCOL_MIN: "3.1"
-      LDAP_TLS_VERIFY_CLIENT: "demand"
-      LDAP_REPLICATION: "false"
-      #LDAP_REPLICATION_CONFIG_SYNCPROV: "binddn="cn=admin,cn=config" bindmethod=simple credentials=$LDAP_CONFIG_PASSWORD searchbase="cn=config" type=refreshAndPersist retry="60 +" timeout=1 starttls=critical"
-      #LDAP_REPLICATION_DB_SYNCPROV: "binddn="cn=admin,$LDAP_BASE_DN" bindmethod=simple credentials=$LDAP_ADMIN_PASSWORD searchbase="$LDAP_BASE_DN" type=refreshAndPersist interval=00:00:00:10 retry="60 +" timeout=1 starttls=critical"
-      #LDAP_REPLICATION_HOSTS: "#PYTHON2BASH:['ldap://ldap.example.org','ldap://ldap2.example.org']"
-      LDAP_REMOVE_CONFIG_AFTER_SETUP: "true"
-      LDAP_SSL_HELPER_PREFIX: "ldap"
-    tty: true
+      LDAP_CONFIG_PASSWORD: config
+      LDAP_DOMAIN: siuu.edu.co
+      LDAP_LOG_LEVEL: 256
+      LDAP_ORGANISATION: SIUU
+      LDAP_READONLY_USER: false
+      LDAP_REMOVE_CONFIG_AFTER_SETUP: true
+      LDAP_REPLICATION: false
+      LDAP_SSL_HELPER_PREFIX: ldap
+      LDAP_TLS: true
+      LDAP_TLS_CA_CRT_FILENAME: ca.crt
+      LDAP_TLS_CIPHER_SUITE: SECURE256:-VERS-SSL3.0
+      LDAP_TLS_CRT_FILENAME: ldap.crt
+      LDAP_TLS_ENFORCE: false
+      LDAP_TLS_KEY_FILENAME: ldap.key
+      LDAP_TLS_PROTOCOL_MIN: 3.1
+      LDAP_TLS_VERIFY_CLIENT: demand
+    hostname: siuu.edu.co
+    image: osixia/openldap:1.1.8
+    ports:
+      - 389:389
+      - 636:636
     stdin_open: true
+    tty: true
     volumes:
       - /var/lib/ldap
       - /etc/ldap/slapd.d
       - /container/service/slapd/assets/certs/
-    ports:
-      - "389:389"
-      - "636:636"
-    hostname: "siuu.edu.co"
-  phpldapadmin:
-    image: osixia/phpldapadmin:latest
-    container_name: ldap_client
+  user_infoms:
+    build: ../userInfo
+    container_name: user_infoms
+    depends_on:
+      - user_information_db
+      - rabbitmq
     environment:
-      PHPLDAPADMIN_LDAP_HOSTS: "siuu-ldap"
-      PHPLDAPADMIN_HTTPS: "false"
+      - MYSQL_DB=USER_INFORMATION
+      - MYSQL_USER=grupo1b
+      - MYSQL_PASSWORD=cristianoronaldo
+      - MYSQL_HOST=user_information_db
+      - MYSQL_PORT=3306
+      - MQHOST=rabbitmq
+      - MQPORT=5672
+    expose:
+      - 3000
     ports:
-      - "8085:80"
-    links:
-      - siuu-ldap
-
-
-version: "3.8"
+      - 3000:3000
+  user_information_db:
+    build: ../userInfo/user_information_db
+    command: --default-authentication-plugin=mysql_native_password
+    container_name: user_information_db
+    environment:
+      - MYSQL_ROOT_PASSWORD=contrasenasegura
+      - MYSQL_DATABASE=USER_INFORMATION
+      - MYSQL_USER=grupo1b
+      - MYSQL_PASSWORD=cristianoronaldo
+    expose:
+      - 3306
+    ports:
+      - 3305:3306
+    volumes:
+      - user_information_db:/var/lib/mysql
+version: '3.8'
 volumes:
   courses_db:
   user_information_db:
