@@ -81,7 +81,7 @@ services:
   phpldapadmin:
     container_name: ldap_client
     environment:
-      PHPLDAPADMIN_HTTPS: "false"
+      PHPLDAPADMIN_HTTPS: false
       PHPLDAPADMIN_LDAP_HOSTS: siuu-ldap
     image: osixia/phpldapadmin:latest
     links:
@@ -97,7 +97,9 @@ services:
     build: ../reverseProxy
     container_name: reverseproxy
     ports:
-      - 443:443
+      - 80:80
+    expose:
+      - 80
   schedulems:
     build: ../schedule
     container_name: schedulems
@@ -116,15 +118,15 @@ services:
       LDAP_DOMAIN: siuu.edu.co
       LDAP_LOG_LEVEL: 256
       LDAP_ORGANISATION: SIUU
-      LDAP_READONLY_USER: "false"
-      LDAP_REMOVE_CONFIG_AFTER_SETUP: "true"
-      LDAP_REPLICATION: "false"
+      LDAP_READONLY_USER: false
+      LDAP_REMOVE_CONFIG_AFTER_SETUP: true
+      LDAP_REPLICATION: false
       LDAP_SSL_HELPER_PREFIX: ldap
-      LDAP_TLS: "true"
+      LDAP_TLS: true
       LDAP_TLS_CA_CRT_FILENAME: ca.crt
       LDAP_TLS_CIPHER_SUITE: SECURE256:-VERS-SSL3.0
       LDAP_TLS_CRT_FILENAME: ldap.crt
-      LDAP_TLS_ENFORCE: "false"
+      LDAP_TLS_ENFORCE: false
       LDAP_TLS_KEY_FILENAME: ldap.key
       LDAP_TLS_PROTOCOL_MIN: 3.1
       LDAP_TLS_VERIFY_CLIENT: demand
@@ -133,8 +135,8 @@ services:
     ports:
       - 389:389
       - 636:636
-    stdin_open: "true"
-    tty: "true"
+    stdin_open: true
+    tty: true
     volumes:
       - /var/lib/ldap
       - /etc/ldap/slapd.d
